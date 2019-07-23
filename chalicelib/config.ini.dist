@@ -1,0 +1,157 @@
+# IVR script configuration
+
+################################################################################
+# Twilio configuration
+[twilio]
+account_sid = 
+auth_token = 
+
+################################################################################
+# AWS configuration
+[aws]
+# Helps keep your IVR warm (to avoid cold-start lag)
+# Uncomment & configure the lambda_ping_endpoint hostname once it's deployed & redeploy
+#lambda_ping_frequency_minutes = 5
+#lambda_ping_endpoint = https://ENDPOINTID.execute-api.AWSREGION.amazonaws.com/api/ping
+
+# Provides more detailed information on errors
+chalice_debug = yes
+
+################################################################################
+# IVR script configuration
+[ivr]
+# Set your local timezone: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# After deploying, use the /ping endpoint to check the time matches with your local time
+timezone = Europe/London
+
+################################################################################
+# Initial welcome
+[ivr_welcome]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/01_welcome.mp3
+
+################################################################################
+# Main menu
+[ivr_menu]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/02_menu.mp3
+pause = 3
+no_input_sample = https://twilio-aws-ivr.s3.amazonaws.com/02_menu_no_input.mp3
+no_input_max_loops = 1
+no_input_action_on_max_loops = hangup_with_goodbye
+
+################################################################################
+# Menu options
+[ivr_menu_option_0]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_action_sample.mp3
+action = hangup_without_goodbye
+
+[ivr_menu_option_1]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_action_hangup.mp3
+action = hangup_without_goodbye
+
+[ivr_menu_option_2]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_action_redirect.mp3
+action = redirect_example
+
+[ivr_menu_option_3]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_action_forward.mp3
+action = forward_example
+
+[ivr_menu_option_4]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_action_voicemail.mp3
+action = voicemail_example
+
+[ivr_menu_option_5]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_hours_morning_or_afternoon.mp3
+action = redirect_morning_or_afternoon
+
+[ivr_menu_option_6]
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_hours_weekday_or_weekend.mp3
+action = redirect_weekday_or_weekend
+
+[ivr_menu_option_7]
+action = back_to_menu
+
+[ivr_menu_option_8]
+action = back_to_menu
+
+[ivr_menu_option_9]
+action = back_to_menu
+
+################################################################################
+# IVR actions
+[action_hangup_with_goodbye]
+type = hangup
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_hangup.mp3
+
+[action_hangup_without_goodbye]
+type = hangup
+
+[action_redirect_example]
+type = redirect
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_redirect_example.mp3
+path = /ivr/action/hangup_with_goodbye
+
+[action_forward_example]
+type = forward
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_forward_example.mp3
+phone_number = +442079460000
+action_on_busy = voicemail_example
+action_on_no_answer = voicemail_example
+action_on_failed = voicemail_example
+action_on_canceled = voicemail_example
+
+[action_voicemail_example]
+type = voicemail
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_all_lines_busy.mp3
+hangup_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_all_lines_busy_bye.mp3
+voicemail_alert_sms_from = +447700900000
+voicemail_alert_sms_to = +447700900001
+voicemail_timeout = 5
+voicemail_max_length = 300
+
+[action_redirect_morning_or_afternoon]
+type = redirect
+hours = open_mornings_only
+hours_action_on_closed = redirect_morning_or_afternoon_its_afternoon
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_redirect_morning_or_afternoon_its_morning.mp3
+path = /ivr/action/hangup_without_goodbye
+
+[action_redirect_morning_or_afternoon_its_afternoon]
+type = hangup
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_redirect_morning_or_afternoon_its_afternoon.mp3
+
+[action_redirect_weekday_or_weekend]
+type = redirect
+hours = open_weekdays_only
+hours_action_on_closed = redirect_weekday_or_weekend_its_a_weekend
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_redirect_weekday_or_weekend_its_a_weekday.mp3
+path = /ivr/action/hangup_without_goodbye
+
+[action_redirect_weekday_or_weekend_its_a_weekend]
+type = hangup
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/04_redirect_weekday_or_weekend_its_a_weekend.mp3
+
+[action_back_to_menu]
+type = redirect
+play_sample = https://twilio-aws-ivr.s3.amazonaws.com/03_back_to_menu.mp3
+path = /ivr/menu
+
+################################################################################
+# IVR hours
+[hours_open_mornings_only]
+mon = 0000-1159
+tue = 0000-1159
+wed = 0000-1159
+thu = 0000-1159
+fri = 0000-1159
+sat = 0000-1159
+sun = 0000-1159
+
+[hours_open_weekdays_only]
+mon = 0000-2359
+tue = 0000-2359
+wed = 0000-2359
+thu = 0000-2359
+fri = 0000-2359
+sat = 
+sun = 
